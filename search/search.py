@@ -87,17 +87,94 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Stack
+
+    stack = Stack() #[(x,y),[path]]
+    visitedState = []
+
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    stack.push((problem.getStartState(),[]))
+
+    while(True):
+        if stack.isEmpty():
+            return []
+        
+        state,path = stack.pop()
+
+        if problem.isGoalState(state):
+            return path
+        
+        visitedState.append(state)
+
+        succ = problem.getSuccessors(state)
+
+        if succ:
+            for i in succ:
+                if i[0] not in visitedState:
+                    newPath = path + [i[1]]
+                    stack.push((i[0],newPath))
+    
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+    queue = Queue() #[(x,y),[path]]
+    visitedState = []
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    queue.push((problem.getStartState(),[]))
+
+    while(True):
+        if queue.isEmpty():
+            return []
+        
+        state,path = queue.pop()
+
+        if problem.isGoalState(state):
+            return path
+        
+        visitedState.append(state)
+
+        succ = problem.getSuccessors(state)
+
+        if succ:
+            for i in succ:
+                if i[0] not in visitedState and i[0] not in (j[0] for j in queue.list) :
+                    newPath = path + [i[1]]
+                    queue.push((i[0],newPath))
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+    heap = PriorityQueue() #[(((x,y),[path]),cost)]
+    visitedState = []
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    heap.push((problem.getStartState(),[]),0)
+
+    while(True):
+        if heap.isEmpty():
+            return []
+        
+        state,path = heap.pop()
+
+        if problem.isGoalState(state):
+            return path
+        
+        visitedState.append(state)
+
+        succ = problem.getSuccessors(state)
+
+        if succ:
+            for i in succ:
+                if i[0] not in visitedState:
+                    newPath = path + [i[1]]
+                    pri = problem.getCostOfActions(newPath)
+                    heap.update((i[0],newPath),pri)
 
 def nullHeuristic(state, problem=None):
     """
