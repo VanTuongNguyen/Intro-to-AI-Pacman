@@ -171,10 +171,20 @@ def uniformCostSearch(problem):
 
         if succ:
             for i in succ:
-                if i[0] not in visitedState:
+                if i[0] not in visitedState and i[0] not in (j[2][0] for j in heap.heap):
+
                     newPath = path + [i[1]]
                     pri = problem.getCostOfActions(newPath)
-                    heap.update((i[0],newPath),pri)
+                    heap.push((i[0],newPath),pri)
+                elif i[0] not in visitedState:
+                    for j in heap.heap:
+                        if j[2][0] == i[0]:
+                            oldPri = problem.getCostOfActions(j[2][1])
+
+                    newPri = problem.getCostOfActions(path + [i[1]])
+                    if oldPri > newPri:
+                        newPath = path + [i[1]]
+                        heap.push((i[0],newPath),newPri)
 
 def nullHeuristic(state, problem=None):
     """
