@@ -325,7 +325,7 @@ class CornersProblem(search.SearchProblem):
             is the incremental cost of expanding to that successor
         """
         "*** YOUR CODE HERE ***"
-        successors = []
+        succ = []
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
 
@@ -340,14 +340,14 @@ class CornersProblem(search.SearchProblem):
                 nextState = ((nextx, nexty),corn) 
                 cost = 1
 
-                successors.append((nextState,action,cost))
+                succ.append((nextState,action,cost))
 
         
         self._expanded += 1 # DO NOT CHANGE
         if state[0] not in self._visited:
             self._visited[state[0]] = True
             self._visitedlist.append(state[0])
-        return successors
+        return succ
 
         
 
@@ -388,8 +388,8 @@ def cornersHeuristic(state, problem):
         return 0
     else:
         distancesFromGoals = [] 
-        for index,item in enumerate(state[1]):
-            if item == 0: 
+        for index,i in enumerate(state[1]):
+            if i == 0: 
                 distancesFromGoals.append(manhattanDistance(state[0],corners[index]))
         return max(distancesFromGoals)
 
@@ -485,7 +485,18 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    listFood = foodGrid.asList()
+    distance = []
+
+    if problem.isGoalState(state):
+        return 0
+
+    for i in listFood:
+        distance.append(mazeDistance(position, i, problem.startingGameState))
+
+    return max(distance)
+    
+   
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -516,7 +527,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        from search import uniformCostSearch
+        return uniformCostSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -552,7 +564,10 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        listFood = self.food.asList()
+        if state in listFood:
+            return True
+        return False
 
 def mazeDistance(point1, point2, gameState):
     """
