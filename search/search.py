@@ -193,10 +193,48 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+from util import PriorityQueue
+
+class NewPriorityQueueWithFunction(PriorityQueue):
+    def __init__(self, problem, func):
+        self.problem = problem
+        PriorityQueue.__init__(self)
+        self.func = func
+    def push(self, item, heuristic):
+        PriorityQueue.push(self, item, self.func(self.problem, item, heuristic))
+
+def f(problem, state, heuristic):
+    return problem.getCostOfActions(state[1]) + heuristic(state[0],problem)
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queueAStar = NewPriorityQueueWithFunction(problem,f)
+    visitedState = []
+
+    if problem.isGoalState(problem.getStartState()):
+        return []
+
+    queueAStar.push((problem.getStartState(),[]),heuristic)
+
+    while (True):
+        if queueAStar.isEmpty():
+            return []
+        state, path = queueAStar.pop()
+
+        if problem.isGoalState(state):
+            return path
+        if state in visitedState:
+            continue
+        visitedState.append(state)
+
+        succ = problem.getSuccessors(state)
+        if succ:
+            for i in succ:
+                if i[0] not in visitedState:
+                    newPath = path + [i[1]]
+                    queueAStar.push((i[0],newPath),heuristic)
+
 
 
 # Abbreviations
